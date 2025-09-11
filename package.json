@@ -10,17 +10,26 @@
     "format": "biome format --write"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^1.24.0",
+    "@ant-design/nextjs-registry": "^1.1.0",
+    "antd": "^5.27.3",
+    "axios": "^1.11.0",
+    "chart.js": "^4.5.0",
+    "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.2"
+    "recharts": "^3.2.0",
+    "zod": "^4.1.7"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@biomejs/biome": "2.2.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/chart.js": "^4.0.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
+    "@types/recharts": "^2.0.1",
     "tailwindcss": "^4",
-    "@biomejs/biome": "2.2.0"
+    "typescript": "^5"
   }
 }
