@@ -14,14 +14,20 @@ export async function GET(request: NextRequest) {
       const response = await fetch(
         `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
       );
-      if (!response.ok) {
+
+
+      resData = await response.json();
+      if (resData.code===0) {
+        resData.ok = false;
+        resData.description = 'binance api error';
+        resData.klines = [];
+        resData.message = resData.msg || '未知错误';
+      } else {
         resData = {
-          ok: false,
-          description: `API请求失败: ${response.status} - ${response.statusText}`
+          ok: true,
+          klines: resData
         };
       }
-      resData = await response.json();
-      resData.ok = true;
     } catch (error) {
       resData = {
         ok: false,

@@ -299,14 +299,16 @@ const handleEMAComparisonSettingsChange = (period1: number, period2: number) => 
       if (!response.ok) {
         throw new Error(`API请求失败: ${response.status} - ${response.statusText}`);
       }
-
-      const data: KlineData[] = await response.json();
-      if (data.length === 0) {
+      const { klines, ok }: { klines: KlineData[]; ok: boolean } = await response.json();
+      if (!ok) {
+        throw new Error('返回的K线数据无效');
+      }
+      if (klines.length === 0) {
         throw new Error('返回的K线数据为空');
       }
 
-      setKlinesData(data);
-      processData(data);
+      setKlinesData(klines);
+      processData(klines);
     } catch (error) {
       console.error('获取数据时出错:', error);
       notification.error({
