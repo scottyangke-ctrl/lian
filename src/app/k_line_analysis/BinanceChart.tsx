@@ -282,6 +282,44 @@ const handleEMAComparisonSettingsChange = (period1: number, period2: number) => 
     { value: '1w', label: '1周' }
   ];
 
+  const fetchDataFromClient = useCallback(async (retryCount = 0) => {
+    if (retryCount > 3) {
+      notification.error({ message: '数据加载失败', description: '多次尝试后仍无法获取数据，请检查网络连接' });
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
+      );
+
+
+      const klines = await response.json();
+
+      if (Array.isArray(klines) && klines.length > 0) {
+        setKlinesData(klines);
+        processData(klines);
+      } else {
+        notification.error({
+          message: '数据获取失败',
+          description: '返回的K线数据无效'
+        });
+      }
+    } catch (error) {
+      console.error('获取数据时出错:', error);
+      notification.error({
+        message: '数据获取失败',
+        description: `错误信息: ${(error as Error).message}`
+      });
+      // 重试逻辑
+      setTimeout(() => fetchDataFromClient(retryCount + 1), 1000);
+    } finally {
+      setLoading(false);
+    }
+  }, [symbol, interval, limit]);
+
   // 获取K线数据（添加重试逻辑）
   const fetchData = useCallback(async (retryCount = 0) => {
     if (retryCount > 3) {
@@ -649,8 +687,8 @@ const handleEMAComparisonSettingsChange = (period1: number, period2: number) => 
 
   // 组件挂载时获取数据
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchDataFromClient();
+  }, [fetchDataFromClient]);
   // 处理EMA周期变化
   const handleEmaPeriodsChange = (short: number, long: number) => {
     setEmaShortPeriod(short);
@@ -716,7 +754,7 @@ const handleEMAComparisonSettingsChange = (period1: number, period2: number) => 
 
         <Button
           type="primary"
-          onClick={() => fetchData()}
+          onClick={() => fetchDataFromClient()}
           className="self-end"
           loading={loading}
         >
