@@ -37,9 +37,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(resData);
     }
 }
-
-// // 处理 POST 请求
-// export function POST(request: NextRequest) {
-//   // ... 处理 POST 逻辑
-//   return NextResponse.json({ received: true });
-// }
+// 配置该函数优先在东京和新加坡运行
+export const config = {
+  regions: ['hkg1','sin1','hnd1','icn1']
+};
