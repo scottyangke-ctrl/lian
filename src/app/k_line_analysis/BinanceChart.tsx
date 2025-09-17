@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Select, InputNumber, Button, Card, Row, Col, Spin, notification } from 'antd';
 import Chart from 'chart.js/auto';
 import axios from 'axios';
+import { KlineData } from '../api/KLineDate'; // 导入K线数据类型
 import PriceChart from '../../components/PriceChart'; // 导入价格图表组件
 import VolumeChart from '../../components/VolumeChart'; // 导入成交量图表组件
 // 导入组件
@@ -15,21 +16,7 @@ import MACDCard from '../../components/MACDCard';
 import BollingerBandsCard from '../../components/BollingerBandsCard';
 const { Option } = Select;
 
-// 定义类型
-type KlineData = [
-  number, // 开盘时间
-  string, // 开盘价
-  string, // 最高价
-  string, // 最低价
-  string, // 收盘价
-  string, // 成交量
-  number, // 收盘时间
-  string, // 成交额
-  number, // 交易数
-  string, // 忽略
-  string, // 忽略
-  string  // 忽略
-];
+
 
 type IndicatorStatus = '超买' | '超卖' | '正常' | '未知';
 type TrendStatus = '上升' | '下降' | '未知';
@@ -274,11 +261,11 @@ const handleEMAComparisonSettingsChange = (period1: number, period2: number) => 
   }, []);
   // 支持的交易对和时间周期
   const symbols: SymbolOption[] = [
-    { value: 'BTCUSDT', label: 'BTC/USDT' },
-    { value: 'ETHUSDT', label: 'ETH/USDT' },
-    { value: 'BNBUSDT', label: 'BNB/USDT' },
-    { value: 'SOLUSDT', label: 'SOL/USDT' },
-    { value: 'XRPUSDT', label: 'XRP/USDT' }
+    { value: 'BTCUSDC', label: 'BTC/USDC' },
+    { value: 'ETHUSDC', label: 'ETH/USDC' },
+    { value: 'BNBUSDC', label: 'BNB/USDC' },
+    { value: 'SOLUSDC', label: 'SOL/USDC' },
+    { value: 'XRPUSDC', label: 'XRP/USDC' }
   ];
 
   const intervals: IntervalOption[] = [
@@ -286,13 +273,13 @@ const handleEMAComparisonSettingsChange = (period1: number, period2: number) => 
     { value: '1h', label: '1小时' },
     { value: '2h', label: '2小时' },
     { value: '4h', label: '4小时' },
-    // { value: '6h', label: '6小时' },
-    // { value: '8h', label: '8小时' },
-    // { value: '12h', label: '12小时' },
-    // { value: '1d', label: '1天' },
-    // { value: '2d', label: '2天' },
-    // { value: '4d', label: '4天' },
-    // { value: '1w', label: '1周' }
+    { value: '6h', label: '6小时' },
+    { value: '8h', label: '8小时' },
+    { value: '12h', label: '12小时' },
+    { value: '1d', label: '1天' },
+    { value: '2d', label: '2天' },
+    { value: '4d', label: '4天' },
+    { value: '1w', label: '1周' }
   ];
 
   // 获取K线数据（添加重试逻辑）
