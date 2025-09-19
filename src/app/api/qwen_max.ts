@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-
+import { ResponseFormatJSONObject, ResponseFormatJSONSchema, ResponseFormatText } from "openai/resources";
 const openai = new OpenAI(
     {
         // 若没有配置环境变量，请用百炼API Key将下行替换为：apiKey: "sk-xxx",
@@ -8,14 +8,7 @@ const openai = new OpenAI(
     }
 );
 
-async function main(text: string) {
-    if (!text) {
-        throw new Error("缺少必要参数");
-    }
-    const response = await openai.chat.completions.create({
-        model: "qwen-vl-max", // 此处以qwen-vl-max为例，可按需更换模型名称。模型列表：https://help.aliyun.com/zh/model-studio/getting-started/models
-        messages: [
-            { role: "system", content: `
+const qwStr = `
                 你是一个经验丰富的加密货币分析师,请分析这来之binance交易所的74条12小时的数据的指标,并给出未来一段时间的预测。
                 如果可以请告诉我下一个12小时有多大的概率上涨,多大的概率下跌,
                 如果是上涨的概率大,就告诉我多少的点位做多买入合适。
@@ -29,10 +22,31 @@ async function main(text: string) {
                     "action": "buy or sell",
                     "entry_price": xx.xx
                 }
-            ` },
+            `;
+/**
+ * 
+ * @param text 要提问的内容
+ * @param model 要使用的模型
+ * @param system_content 系统提示内容
+ * @param response_format 响应格式
+ * @returns 
+ */
+async function main(
+    text: string,
+    model: string = "qwen-vl-max",
+    system_content = qwStr,
+    response_format: ResponseFormatText | ResponseFormatJSONSchema | ResponseFormatJSONObject = { type: "json_object" }
+) {
+    if (!text) {
+        throw new Error("缺少必要参数");
+    }
+    const response = await openai.chat.completions.create({
+        model,
+        messages: [
+            { role: "system", content: system_content },
             { role: "user", content: text },
         ],
-        response_format: { type: "json_object" },
+        response_format,
     });
     return response;
 }
