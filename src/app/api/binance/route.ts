@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { validateRequest } from '@/app/lib/validateRequest';
 import {klinesSchema} from '@/app/lib/schemas';
+import { ApiResponseUtil } from '@/lib/api-response';
 // 处理 GET 请求
 export async function GET(request: NextRequest) {
-    let resData;
      // 校验请求
   const { data, errorResponse } = await validateRequest(request, klinesSchema);
   if (errorResponse) return errorResponse;
@@ -15,26 +15,14 @@ export async function GET(request: NextRequest) {
         `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
       );
 
-
-      resData = await response.json();
+      const resData = await response.json();
       if (resData.code===0) {
-        resData.ok = false;
-        resData.description = 'binance api error';
-        resData.klines = [];
-        resData.message = resData.msg || '未知错误';
+        return NextResponse.json(ApiResponseUtil.error('Binance API error', resData.msg || 'Unknown error', 400));
       } else {
-        resData = {
-          ok: true,
-          klines: resData
-        };
+        return NextResponse.json(ApiResponseUtil.success({ klines: resData }, 'Klines data retrieved successfully'));
       }
     } catch (error) {
-      resData = {
-        ok: false,
-        description: `错误信息: ${(error as Error).message}`
-      };
-    } finally {
-        return NextResponse.json(resData);
+      return NextResponse.json(ApiResponseUtil.serverError((error as Error).message));
     }
 }
 // 配置该函数优先在东京和新加坡运行

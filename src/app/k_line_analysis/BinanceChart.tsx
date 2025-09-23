@@ -14,6 +14,7 @@ import EMAComparisonCard from '../../components/EMAComparisonCard';
 import EMAMACard from '../../components/EMAMACard';
 import MACDCard from '../../components/MACDCard';
 import BollingerBandsCard from '../../components/BollingerBandsCard';
+import { apiClient } from '@/lib/api-client';
 const { Option } = Select;
 
 
@@ -330,18 +331,15 @@ const handleEMAComparisonSettingsChange = (period1: number, period2: number) => 
 
     setLoading(true);
     try {
-      const response = await fetch(
-        `${location.origin}/api/binance?symbol=${symbol}&interval=${interval}&limit=${limit}`
-      );
+      const response = await apiClient.get(`/binance?symbol=${symbol}&interval=${interval}&limit=${limit}`);
 
-      if (!response.ok) {
-        throw new Error(`API请求失败: ${response.status} - ${response.statusText}`);
+      if (!response.success) {
+        throw new Error(response.message || response.error || 'Failed to fetch klines data');
       }
-      const { klines, ok }: { klines: KlineData[]; ok: boolean } = await response.json();
-      if (!ok) {
-        throw new Error('返回的K线数据无效');
-      }
-      if (klines.length === 0) {
+
+      const data = response.data as { klines: any[] };
+      const { klines } = data;
+      if (!klines || klines.length === 0) {
         throw new Error('返回的K线数据为空');
       }
 

@@ -5,6 +5,7 @@ import { Query } from '../../db/getLocalCryptoData';
 import {qwenMax, deepseek} from '../qwen_max'
 import { calculateIndicators } from './calculate';
 import { number } from 'zod/v4';
+import { ApiResponseUtil } from '@/lib/api-response';
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
   if (size <= 0) {
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
     const tableName = searchParams.get('tableName');
     const offset = searchParams.get('offset') || '1';
     if (!tableName) {
-        return NextResponse.json({ error: 'Missing tableName parameter' }, { status: 400 });
+        return NextResponse.json(ApiResponseUtil.error('Missing tableName parameter', undefined, 400), { status: 400 });
     }
     try {
         const query = Query<KLineTableData>(tableName);
@@ -50,38 +51,14 @@ export async function GET(request: NextRequest) {
         if (data.length > 74) {
             const chunkedData = chunkArray(data, 74);
             const collectionResult = await collectData(chunkedData);
-            return NextResponse.json({collectionResult });
+            return NextResponse.json(ApiResponseUtil.success(collectionResult, 'Data collected and processed successfully'));
         } else {
             // 直接处理
             const _res = calculateIndicators(data);
-            return await NextResponse.json({data, ..._res, res_qwen:{}, res_deepseek: {} });
+            return NextResponse.json(ApiResponseUtil.success({data, ..._res, res_qwen:{}, res_deepseek: {}}, 'Indicators calculated successfully'));
         }
- 
-        // return NextResponse.json({ data, indicators: {sma,
-        //     ema,
-        //     rsi,
-        //     macd,
-        //     bb,
-        //     stochastic,
-        //     atr,
-        //     adx,
-        //     obv,
-        //     williamsR,
-        //     cci} });
-        // const res_deepseek = await deepseek(JSON.stringify({sma,
-        // ema,
-        // rsi,
-        // macd,
-        // bb,
-        // stochastic,
-        // atr,
-        // adx,
-        // obv,
-        // williamsR,
-        // cci }));
-        // const res_qwen = await qwenMax(JSON.stringify(data));
     } catch (error) {
-        return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });
+        return NextResponse.json(ApiResponseUtil.serverError((error as Error).message), { status: 500 });
     }
 }
 

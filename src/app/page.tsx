@@ -1,24 +1,38 @@
-import Image from "next/image";
-import React from 'react';
-import { Button } from 'antd';
+'use client';
 
-const Homeant = () => (
-  <div className="App">
-    <Button type="primary">Button</Button>
-  </div>
-);
+import React from 'react';
+import { Spin, Card, Typography, Button } from 'antd';
+import Link from 'next/link';
+
+const { Title, Text } = Typography;
+
 export default function Home() {
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-      
-      
-        <Homeant />
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        
-  
-      </footer>
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <Title level={2}>加密货币交易平台</Title>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card
+            title="K线分析"
+            extra={<Link href="/k_line_analysis">查看</Link>}
+            className="hover:shadow-lg transition-shadow"
+          >
+            <p>查看和分析加密货币的K线图表</p>
+          </Card>
+          <Card
+            title="策略日志"
+            extra={<Link href="/strategy-log">查看</Link>}
+            className="hover:shadow-lg transition-shadow"
+          >
+            <p>查看交易策略的执行日志</p>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

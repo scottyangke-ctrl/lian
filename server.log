@@ -1,0 +1,19 @@
+Debugger attached.
+
+> client_crypto_project@0.1.0 dev
+> next dev --turbopack
+
+Debugger attached.
+Debugger attached.
+   ▲ Next.js 15.5.2 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.31.239:3000
+   - Environments: .env
+
+ ✓ Starting...
+ ○ Compiling middleware ...
+ ✓ Compiled middleware in 3.8s
+ ✓ Ready in 36.3s
+[?25h
+Waiting for the debugger to disconnect...
+Waiting for the debugger to disconnect...
